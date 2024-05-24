@@ -115,7 +115,7 @@ function init()
         end
         if d.type == "note_on" then
           if(midi_device[params:get("midi_dev")].dev_name == name and msg_ch == params:get("midi_ch")) then
-            print ("note-on: ".. d.note .. ", velocity:" .. d.vel)
+           -- print ("note-on: ".. d.note .. ", velocity:" .. d.vel)
             current_note = d.note
             engine.noteOn(d.note, d.vel)
             redraw()
@@ -125,7 +125,7 @@ function init()
             engine.noteOff(0)
           end
         end 
-        -- ccs
+--[[         -- ccs
         if d.type == "cc" then
           for k,v in pairs(controls) do
               if controls[k].midi == d.cc then
@@ -145,7 +145,7 @@ function init()
               end 
           end  
           redraw()    
-        end 
+        end  ]]
     
       end
     end
@@ -165,53 +165,46 @@ function init()
   params:set_action("pitch",function (x)
     engine.pitch(x)
     controls.pitch.ui:set_value (x)
-    redraw()
   end)
   params:set("engine",eng)
   params:set_action("engine", function(x) 
     engine.eng(x-1)
+    print(x)
     controls.engine.ui:set_value (x)
     legend = plaits_engines[params:get("engine")]
     png = params:get("engine")
-    redraw() 
   end)
 
   params:set("harmonics",harm)
   params:set_action("harmonics",function(x)
     engine.harm(x)
-    controls.harmonics.ui:set_value (x)
-    redraw()
+    controls.harmonics.ui:set_value (params:get("harmonics"))
   end)
 
   params:set("timbre",timbre)
   params:set_action("timbre",function(x)
     engine.timbre(x)
     controls.timbre.ui:set_value (x)
-    redraw()
   end)
   params:set("timb_mod",timb_mod)
   params:set_action("timb_mod",function(x)
     engine.timb_mod(x)
     controls.timb_mod.ui:set_value (x)
-    redraw()
   end)
   params:set("morph",morph)
   params:set_action("morph",function(x)
     engine.morph(x)
     controls.morph.ui:set_value (x)
-    redraw()
   end)
   params:set("morph_mod",morph_mod)
   params:set_action("morph_mod",function(x)
     engine.morph_mod(x)
     controls.morph_mod.ui:set_value (x)
-    redraw()
   end)
   params:set("fm_mod",fm_mod)
   params:set_action("fm_mod",function(x)
     engine.fm_mod(x)
     controls.fm_mod.ui:set_value (x)
-    redraw()
   end)
   params:set("trigger",trig)
 
@@ -219,19 +212,16 @@ function init()
   params:set_action("level",function(x)
     engine.level(x)
     controls.level.ui:set_value (x)
-    redraw()
   end)
   params:set("decay",decay)
   params:set_action("decay",function(x)
     engine.decay(x)
     controls.decay.ui:set_value (x)
-    redraw()
   end)
   params:set("lpg_colour",lpg_colour)
   params:set_action("lpg_colour",function(x)
     engine.lpg_colour(x)
     controls.lpg_colour.ui:set_value (x)
-    redraw()
   end)
  
   
@@ -269,7 +259,15 @@ function init()
      controls[k].ui:set_value (params:get(k))
   end  
   
-  redraw()
+  -- startupclock
+  clock.run(function()
+    while true do
+      --debounce_params()
+      clock.sleep(1/15)
+      redraw()
+    end
+  end)
+
 end
 
 function key(n,z)
