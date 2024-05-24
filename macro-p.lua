@@ -131,20 +131,70 @@ function init()
 
   -- Add params
   MacroP.add_params()
-
+  
   -- initialize params  
   params:set("pitch", pitch)
+  params:set_action("pitch",function ()
+    controls.pitch.ui:set_value (params:get("pitch"))
+    redraw()
+  end)
   params:set("engine",eng)
+  params:set_action("engine", function() 
+    controls.engine.ui:set_value (params:get("engine"))
+    legend = plaits_engines[params:get("engine")]
+    png = params:get("engine")
+    redraw() 
+  end)
+
   params:set("harmonics",harm)
+  params:set_action("harmonics",function ()
+    controls.harmonics.ui:set_value (params:get("harmonics"))
+    redraw()
+  end)
+
   params:set("timbre",timbre)
+  params:set_action("timbre",function ()
+    controls.timbre.ui:set_value (params:get("timbre"))
+    redraw()
+  end)
   params:set("timb_mod",timb_mod)
+  params:set_action("timb_mod",function ()
+    controls.timb_mod.ui:set_value (params:get("timb_mod"))
+    redraw()
+  end)
   params:set("morph",morph)
+  params:set_action("morph",function ()
+    controls.morph.ui:set_value (params:get("morph"))
+    redraw()
+  end)
   params:set("morph_mod",morph_mod)
+  params:set_action("morph_mod",function ()
+    controls.morph_mod.ui:set_value (params:get("morph_mod"))
+    redraw()
+  end)
   params:set("fm_mod",fm_mod)
+  params:set_action("fm_mod",function ()
+    controls.fm_mod.ui:set_value (params:get("fm_mod"))
+    redraw()
+  end)
   params:set("trigger",trig)
+
   params:set("level",level)
+  params:set_action("level",function ()
+    controls.level.ui:set_value (params:get("level"))
+    redraw()
+  end)
   params:set("decay",decay)
+  params:set_action("decay",function ()
+    controls.decay.ui:set_value (params:get("decay"))
+    redraw()
+  end)
   params:set("lpg_colour",lpg_colour)
+  params:set_action("lpg_colour",function ()
+    controls.lpg_colour.ui:set_value (params:get("lpg_colour"))
+    redraw()
+  end)
+ 
   
   legend = plaits_engines[params:get("engine")]
   
@@ -198,7 +248,7 @@ function enc(n,d)
   if n == 1 then
     params:delta("harmonics", d)
     --print("harmonics", string.format("%.2f", params:get("harmonics")))
-    controls.harmonics.ui:set_value (params:get("harmonics"))
+    
     --message = "harmonics"
   elseif n == 2 then
     params:delta("timbre", d)
@@ -213,9 +263,6 @@ function enc(n,d)
   elseif n == 4 then
     params:delta("engine", d)
     --print("engine", string.format("%i", params:get("engine")))
-    controls.engine.ui:set_value (params:get("engine"))
-    legend = plaits_engines[params:get("engine")]
-    png = params:get("engine")
   end
   redraw()
 end
