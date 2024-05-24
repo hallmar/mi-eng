@@ -125,10 +125,10 @@ function init()
             engine.noteOff(0)
           end
         end 
---[[         -- ccs
+                 -- ccs
         if d.type == "cc" then
           for k,v in pairs(controls) do
-              if controls[k].midi == d.cc then
+              if controls[k].midi == d.cc and midi_device[params:get("midi_dev_cc")].dev_name == name then
                 --print ("cc: ".. d.cc .. ", val:" .. d.val)
                 if k == "pitch" then
                   controls[k].ui:set_value (d.val)
@@ -143,18 +143,18 @@ function init()
                   controls[k].ui:set_value (d.val/100)
                 end
               end 
-          end  
-          redraw()    
-        end  ]]
+          end    
+        end  
     
-      end
+      end --connection event ends
     end
-  end
+  end--for ends
   if(midi_device_list[2] == nil) then 
     midi_device_list[2] = "no devices"
   end
   params:add_option("midi_dev","device",midi_device_list,2)
   params:add_number("midi_ch","channel",1,16,1)  
+  params:add_option("midi_dev_cc","device cc",midi_device_list,2)
 
   
   MacroP.add_params()
@@ -169,7 +169,7 @@ function init()
   params:set("engine",eng)
   params:set_action("engine", function(x) 
     engine.eng(x-1)
-    print(x)
+    --print(x)
     controls.engine.ui:set_value (x)
     legend = plaits_engines[params:get("engine")]
     png = params:get("engine")
