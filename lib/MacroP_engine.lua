@@ -18,35 +18,35 @@ function MacroP.add_params()
 
   params:add_separator ("Macro Osc P")
   params:add{type = "control", id = "engine", name = "engine",
-    controlspec = cs.new(1, 16, "lin", 1, 0, ""), action = engine.eng}
+    controlspec = cs.new(1, 16, "lin", 1, 0, "")}
 
   params:add{type = "control", id = "pitch", name = "pitch",
-    controlspec = cs.new(0, 127, "lin", 1, 35, ""), action = engine.pitch}
+    controlspec = cs.new(0, 127, "lin", 1, 35, "")}
   params:add{type = "control", id = "harmonics", name = "harmonics",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.25, ""), action = engine.harm}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.25, "")}
 
   params:add{type = "control", id = "timbre", name = "timbre",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.5, ""), action = engine.timbre}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.5, "")}
   params:add{type = "control", id = "timb_mod", name = "timb_mod",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.timb_mod}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
 
   params:add{type = "control", id = "morph", name = "morph",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.5, ""), action = engine.morph}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0.5, "")}
   params:add{type = "control", id = "morph_mod", name = "morph_mod",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.morph_mod}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
 
   params:add{type = "control", id = "fm_mod", name = "fm_mod",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.fm_mod}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
 
   params:add{type = "control", id = "trigger", name = "trigger",
-    controlspec = cs.new(0, 1, "lin", 1, 0, ""), action = engine.trigger}
+    controlspec = cs.new(0, 1, "lin", 1, 0, "")}
   params:add{type = "control", id = "level", name = "level",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.level}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
   
   params:add{type = "control", id = "decay", name = "decay",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.decay}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
   params:add{type = "control", id = "lpg_colour", name = "lpg_colour",
-    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, ""), action = engine.lpg_colour}
+    controlspec = cs.new(0.00, 1.00, "lin", 0.01, 0, "")}
 
 end
 

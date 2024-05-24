@@ -92,106 +92,145 @@ function init()
   end
 
   
-  local mo = midi.connect() -- defaults to port 1 (which is set in SYSTEM > DEVICES)
-  mo.event = function(data) 
-    d = midi.to_msg(data)
-    if d.type == "note_on" then
-      print ("note-on: ".. d.note .. ", velocity:" .. d.vel)
-      current_note = d.note
-      engine.noteOn(d.note, d.vel)
-      redraw()
-    elseif d.type == "note_off" then
-      engine.noteOff(0)
-    end 
-    -- ccs
-    if d.type == "cc" then
-      for k,v in pairs(controls) do
-          if controls[k].midi == d.cc then
-            --print ("cc: ".. d.cc .. ", val:" .. d.val)
-            if k == "pitch" then
-              controls[k].ui:set_value (d.val)
-              params:set(k, d.val)
-            elseif k == "engine" then 
-              controls[k].ui:set_value (d.val)
-              params:set(k, d.val)
-              legend = plaits_engines[params:get("engine")]
-              png = params:get("engine")
-            elseif k ~= nil then
-              params:set(k, d.val/100)
-              controls[k].ui:set_value (d.val/100)
-            end
-         end 
-      end  
-      redraw()    
-    end 
-
-  end
-
-  
-
   -- Add params
-  MacroP.add_params()
+  midi_device={{name="none",note_on=function()end,note_off=function()end,start=function()end,stop=function()end,}}
+  midi_device_list={"none"}
+  for i,dev in pairs(midi.devices) do
+    if dev.port~=nil then
+      local connection=midi.connect(dev.port)
+      local name=string.lower(dev.name).." "..i
+      local dev_name = string.lower(dev.name)
+      print("adding "..name.." as midi device")
+      table.insert(midi_device_list,name)
+      table.insert(midi_device,{
+        name=name,
+        dev_name=dev_name,
+      })
+      connection.event = function(data) 
+        local name = string.lower(connection.device.name)
+        d = midi.to_msg(data)
+        local msg_ch = d.ch
+        if msg_ch == nil then
+          msg_ch = 1
+        end
+        if d.type == "note_on" then
+          if(midi_device[params:get("midi_dev")].dev_name == name and msg_ch == params:get("midi_ch")) then
+            print ("note-on: ".. d.note .. ", velocity:" .. d.vel)
+            current_note = d.note
+            engine.noteOn(d.note, d.vel)
+            redraw()
+          end
+        elseif d.type == "note_off" then
+          if(midi_device[params:get("midi_dev")].dev_name == name and msg_ch == params:get("midi_ch")) then
+            engine.noteOff(0)
+          end
+        end 
+        -- ccs
+        if d.type == "cc" then
+          for k,v in pairs(controls) do
+              if controls[k].midi == d.cc then
+                --print ("cc: ".. d.cc .. ", val:" .. d.val)
+                if k == "pitch" then
+                  controls[k].ui:set_value (d.val)
+                  params:set(k, d.val)
+                elseif k == "engine" then 
+                  controls[k].ui:set_value (d.val)
+                  params:set(k, d.val)
+                  legend = plaits_engines[params:get("engine")]
+                  png = params:get("engine")
+                elseif k ~= nil then
+                  params:set(k, d.val/100)
+                  controls[k].ui:set_value (d.val/100)
+                end
+              end 
+          end  
+          redraw()    
+        end 
+    
+      end
+    end
+  end
+  if(midi_device_list[2] == nil) then 
+    midi_device_list[2] = "no devices"
+  end
+  params:add_option("midi_dev","device",midi_device_list,2)
+  params:add_number("midi_ch","channel",1,16,1)  
+
   
+  MacroP.add_params()
+
+
   -- initialize params  
   params:set("pitch", pitch)
-  params:set_action("pitch",function ()
-    controls.pitch.ui:set_value (params:get("pitch"))
+  params:set_action("pitch",function (x)
+    engine.pitch(x)
+    controls.pitch.ui:set_value (x)
     redraw()
   end)
   params:set("engine",eng)
-  params:set_action("engine", function() 
-    controls.engine.ui:set_value (params:get("engine"))
+  params:set_action("engine", function(x) 
+    engine.eng(x-1)
+    controls.engine.ui:set_value (x)
     legend = plaits_engines[params:get("engine")]
     png = params:get("engine")
     redraw() 
   end)
 
   params:set("harmonics",harm)
-  params:set_action("harmonics",function ()
-    controls.harmonics.ui:set_value (params:get("harmonics"))
+  params:set_action("harmonics",function(x)
+    engine.harm(x)
+    controls.harmonics.ui:set_value (x)
     redraw()
   end)
 
   params:set("timbre",timbre)
-  params:set_action("timbre",function ()
-    controls.timbre.ui:set_value (params:get("timbre"))
+  params:set_action("timbre",function(x)
+    engine.timbre(x)
+    controls.timbre.ui:set_value (x)
     redraw()
   end)
   params:set("timb_mod",timb_mod)
-  params:set_action("timb_mod",function ()
-    controls.timb_mod.ui:set_value (params:get("timb_mod"))
+  params:set_action("timb_mod",function(x)
+    engine.timb_mod(x)
+    controls.timb_mod.ui:set_value (x)
     redraw()
   end)
   params:set("morph",morph)
-  params:set_action("morph",function ()
-    controls.morph.ui:set_value (params:get("morph"))
+  params:set_action("morph",function(x)
+    engine.morph(x)
+    controls.morph.ui:set_value (x)
     redraw()
   end)
   params:set("morph_mod",morph_mod)
-  params:set_action("morph_mod",function ()
-    controls.morph_mod.ui:set_value (params:get("morph_mod"))
+  params:set_action("morph_mod",function(x)
+    engine.morph_mod(x)
+    controls.morph_mod.ui:set_value (x)
     redraw()
   end)
   params:set("fm_mod",fm_mod)
-  params:set_action("fm_mod",function ()
-    controls.fm_mod.ui:set_value (params:get("fm_mod"))
+  params:set_action("fm_mod",function(x)
+    engine.fm_mod(x)
+    controls.fm_mod.ui:set_value (x)
     redraw()
   end)
   params:set("trigger",trig)
 
   params:set("level",level)
-  params:set_action("level",function ()
-    controls.level.ui:set_value (params:get("level"))
+  params:set_action("level",function(x)
+    engine.level(x)
+    controls.level.ui:set_value (x)
     redraw()
   end)
   params:set("decay",decay)
-  params:set_action("decay",function ()
-    controls.decay.ui:set_value (params:get("decay"))
+  params:set_action("decay",function(x)
+    engine.decay(x)
+    controls.decay.ui:set_value (x)
     redraw()
   end)
   params:set("lpg_colour",lpg_colour)
-  params:set_action("lpg_colour",function ()
-    controls.lpg_colour.ui:set_value (params:get("lpg_colour"))
+  params:set_action("lpg_colour",function(x)
+    engine.lpg_colour(x)
+    controls.lpg_colour.ui:set_value (x)
     redraw()
   end)
  
@@ -248,23 +287,22 @@ function enc(n,d)
   if n == 1 then
     params:delta("harmonics", d)
     --print("harmonics", string.format("%.2f", params:get("harmonics")))
-    
+    --controls.harmonics.ui:set_value (params:get("harmonics"))
     --message = "harmonics"
   elseif n == 2 then
     params:delta("timbre", d)
     --print("timbre", string.format("%.2f", params:get("timbre")))
-    controls.timbre.ui:set_value (params:get("timbre"))
+    --controls.timbre.ui:set_value (params:get("timbre"))
     --message = "timbre"
   elseif n == 3 then
     params:delta("morph", d)
     --print("morph", string.format("%.2f", params:get("morph")))
-    controls.morph.ui:set_value (params:get("morph"))
+    --controls.morph.ui:set_value (params:get("morph"))
     --message = "morph"
   elseif n == 4 then
     params:delta("engine", d)
     --print("engine", string.format("%i", params:get("engine")))
   end
-  redraw()
 end
 
 
